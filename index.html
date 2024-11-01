@@ -17,7 +17,9 @@
         position: absolute;
         top: 0;
         bottom: 0;
-        width: 100%;
+        width: 90%;
+        margin: 20px;
+        border-radius: 200px;
       }
 
       /* Legend styling */
@@ -27,16 +29,17 @@
         left: 50%;
         transform: translateX(-50%);
         z-index: 1000;
-        background: rgba(255, 255, 255, 0.6); /* Frosty glass effect */
+        background: rgba(255, 255, 255, 0.4); /* Frosty glass effect */
         backdrop-filter: blur(8px); /* Apply blur for frosted look */
         padding: 15px;
         border-radius: 12px;
-        font-family: Arial, sans-serif;
+        font-family: Roboto;
         font-size: 14px;
         color: #333;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         text-align: center;
         max-width: 300px;
+        margin-bottom: 16px;
       }
 
       .legend strong {
@@ -48,9 +51,10 @@
 
       .legend div {
         display: flex;
-        align-items: center;
-        justify-content: center;
+        align-items: left;
+        justify-content: left;
         margin-bottom: 6px;
+        padding-left: 80px;
       }
 
       .legend div span {
@@ -68,6 +72,9 @@
     <!-- Legend HTML -->
     <div class="legend">
       <strong>Wildfire Incidents Based on NASA FIRMS Fire Archive</strong>
+      <h4>
+        Start Date: 2024-10-01,End Date: 2024-11-01, Data Source: MODIS C6.1
+      </h4>
       <div><span style="background-color: #ffd9d9"></span> Low Brightness</div>
       <div>
         <span style="background-color: #ff8c66"></span> Medium Brightness

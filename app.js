@@ -5,7 +5,7 @@ const MAPBOX_ACCESS_TOKEN =
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 const map = new mapboxgl.Map({
   container: "map",
-  style: "mapbox://styles/eleni95/cm2ynq7ei00r301qw5s7z4s34", // Moonlight-style map
+  style: "mapbox://styles/eleni95/cm2ynq7ei00r301qw5s7z4s34/draft", // Moonlight-style map
   center: [10, 50], // Centered in Europe
   zoom: 4,
 });
@@ -51,7 +51,7 @@ async function loadWildfireData() {
           "interpolate",
           ["linear"],
           ["get", "confidence"],
-          50,
+          40,
           2, // Low confidence results in smaller circles
           100,
           6, // High confidence results in larger circles
