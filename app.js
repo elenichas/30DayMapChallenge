@@ -15,6 +15,7 @@ async function loadWildfireData() {
   const response = await fetch("./firesmall.json"); // Replace with the actual path
   const wildfireData = await response.json();
 
+  //test
   // Convert the data to GeoJSON format with confidence as a number
   const geojsonData = {
     type: "FeatureCollection",
