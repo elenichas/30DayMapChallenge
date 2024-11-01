@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Disaster Map Visualization</title>
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+      }
+
+      /* Legend styling */
+      .legend {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        background: rgba(255, 255, 255, 0.6); /* Frosty glass effect */
+        backdrop-filter: blur(8px); /* Apply blur for frosted look */
+        padding: 15px;
+        border-radius: 12px;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        color: #333;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        max-width: 300px;
+      }
+
+      .legend strong {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 14px;
+        font-weight: bold;
+      }
+
+      .legend div {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 6px;
+      }
+
+      .legend div span {
+        width: 12px;
+        height: 12px;
+        display: inline-block;
+        margin-right: 8px;
+        border-radius: 50%; /* Make color indicators circular */
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <!-- Legend HTML -->
+    <div class="legend">
+      <strong>Wildfire Incidents Based on NASA FIRMS Fire Archive</strong>
+      <div><span style="background-color: #ffd9d9"></span> Low Brightness</div>
+      <div>
+        <span style="background-color: #ff8c66"></span> Medium Brightness
+      </div>
+      <div><span style="background-color: #bf4800"></span> High Brightness</div>
+    </div>
+
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.9.2/mapbox-gl.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
