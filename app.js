@@ -12,7 +12,7 @@ const map = new mapboxgl.Map({
 
 // Load wildfire data and add to the map as a GeoJSON source
 async function loadWildfireData() {
-  const response = await fetch("./fire.json"); // Replace with the actual path
+  const response = await fetch("./firesmall.json"); // Replace with the actual path
   const wildfireData = await response.json();
 
   // Convert the data to GeoJSON format with confidence as a number
@@ -61,9 +61,9 @@ async function loadWildfireData() {
           "interpolate",
           ["linear"],
           ["get", "brightness"],
-          290,
+          200,
           "#ffd9d9", // Lower brightness is lighter
-          400,
+          450,
           "#bf4800", // Higher brightness is darker
         ],
         "circle-opacity": 0.7,
@@ -98,6 +98,39 @@ async function loadWildfireData() {
     map.on("mouseleave", "fire-points", () => {
       map.getCanvas().style.cursor = "";
     });
+
+    // Filtering function
+    function updateFilters() {
+      const brightnessThreshold = parseInt(
+        document.getElementById("brightnessSlider").value,
+        10
+      );
+      const confidenceThreshold = parseInt(
+        document.getElementById("confidenceSlider").value,
+        10
+      );
+
+      map.setFilter("fire-points", [
+        "all",
+        [">=", ["get", "brightness"], brightnessThreshold],
+        [">=", ["get", "confidence"], confidenceThreshold],
+      ]);
+    }
+
+    // Event listeners for the sliders
+    document
+      .getElementById("brightnessSlider")
+      .addEventListener("input", (e) => {
+        document.getElementById("brightnessValue").innerText = e.target.value;
+        updateFilters();
+      });
+
+    document
+      .getElementById("confidenceSlider")
+      .addEventListener("input", (e) => {
+        document.getElementById("confidenceValue").innerText = e.target.value;
+        updateFilters();
+      });
   });
 }
 
