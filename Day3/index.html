@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>USA Obesity Map</title>
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js"></script>
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+      }
+      .legend {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        padding: 10px;
+        background: white;
+        border-radius: 3px;
+        font-size: 12px;
+        line-height: 1.5;
+      }
+      .legend div {
+        display: flex;
+        align-items: center;
+        margin-bottom: 4px;
+      }
+      .legend div span {
+        display: inline-block;
+        width: 20px;
+        height: 10px;
+        margin-right: 5px;
+      }
+      .tooltip {
+        position: absolute;
+        z-index: 1;
+        background-color: white;
+        border-radius: 3px;
+        padding: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        font-size: 12px;
+        display: none;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <div id="tooltip" class="tooltip"></div>
+    <div class="legend">
+      <h4>Obesity Rate (%)</h4>
+      <div><span style="background-color: #d3bce3"></span>24.8 - 28.5</div>
+      <div><span style="background-color: #a675a1"></span>28.6 - 30.4</div>
+      <div><span style="background-color: #7d3c7d"></span>30.5 - 32.3</div>
+      <div><span style="background-color: #4c0a4c"></span>32.4+</div>
+    </div>
+    <script>
+      mapboxgl.accessToken =
+        "pk.eyJ1IjoiZWxlbmk5NSIsImEiOiJjbTJ5azlqZmEwMW9xMmtzamJ6OGc1bWxuIn0.BcUI_KSPVFGZEmjsIJubDA";
+      const map = new mapboxgl.Map({
+        container: "map",
+        style: "mapbox://styles/mapbox/light-v10",
+        center: [-98.5795, 39.8283],
+        zoom: 4,
+      });
+
+      const tooltip = document.getElementById("tooltip");
+      let hoveredStateId = null;
+
+      fetch("./obesity.geojson")
+        .then((response) => response.json())
+        .then((data) => {
+          map.on("load", () => {
+            map.addSource("obesity-data", {
+              type: "geojson",
+              data: data,
+            });
+
+            // Base layer for states
+            map.addLayer({
+              id: "obesity-layer",
+              type: "fill",
+              source: "obesity-data",
+              paint: {
+                "fill-color": [
+                  "interpolate",
+                  ["linear"],
+                  ["get", "Obesity"],
+                  24.8,
+                  "#D3BCE3",
+                  28.6,
+                  "#A675A1",
+                  30.5,
+                  "#7D3C7D",
+                  32.4,
+                  "#4C0A4C",
+                ],
+                "fill-opacity": 0.7,
+              },
+            });
+
+            // Hover effect layer with a darker color overlay
+            map.addLayer({
+              id: "obesity-layer-hover",
+              type: "fill",
+              source: "obesity-data",
+              paint: {
+                "fill-color": "#4C0A4C", // Darker shade for hover effect
+                "fill-opacity": [
+                  "case",
+                  ["boolean", ["feature-state", "hover"], false],
+                  0.4, // Darker opacity on hover
+                  0, // Transparent when not hovering
+                ],
+              },
+            });
+
+            map.addLayer({
+              id: "obesity-outline",
+              type: "line",
+              source: "obesity-data",
+              paint: {
+                "line-color": "#ffffff",
+                "line-width": 1,
+              },
+            });
+
+            // Tooltip
+            map.on("mousemove", "obesity-layer", (e) => {
+              const feature = e.features[0];
+              map.getCanvas().style.cursor = "pointer";
+
+              // Display tooltip with state name and obesity rate
+              tooltip.style.display = "block";
+              tooltip.style.left = `${e.originalEvent.pageX + 10}px`;
+              tooltip.style.top = `${e.originalEvent.pageY + 10}px`;
+              tooltip.innerHTML = `<strong>${feature.properties.NAME}</strong><br>Obesity Rate: ${feature.properties.Obesity}%`;
+
+              // Highlight the hovered state
+              if (hoveredStateId) {
+                map.setFeatureState(
+                  { source: "obesity-data", id: hoveredStateId },
+                  { hover: false }
+                );
+              }
+              hoveredStateId = feature.id;
+              map.setFeatureState(
+                { source: "obesity-data", id: hoveredStateId },
+                { hover: true }
+              );
+            });
+
+            map.on("mouseleave", "obesity-layer", () => {
+              map.getCanvas().style.cursor = "";
+              tooltip.style.display = "none";
+
+              // Reset the hover effect
+              if (hoveredStateId) {
+                map.setFeatureState(
+                  { source: "obesity-data", id: hoveredStateId },
+                  { hover: false }
+                );
+              }
+              hoveredStateId = null;
+            });
+
+            // Fly-to effect on state click
+            map.on("click", "obesity-layer", (e) => {
+              const feature = e.features[0];
+              const coordinates = feature.geometry.coordinates[0][0]; // Center on the first coordinate of the polygon
+
+              map.flyTo({
+                center: coordinates,
+                zoom: 6, // Zoom in closer to the state
+                essential: true, // Ensures compatibility with reduced-motion settings
+              });
+
+              // Update tooltip for clicked state
+              tooltip.style.display = "block";
+              tooltip.style.left = `${e.originalEvent.pageX + 10}px`;
+              tooltip.style.top = `${e.originalEvent.pageY + 10}px`;
+              tooltip.innerHTML = `<strong>${feature.properties.NAME}</strong><br>Obesity Rate: ${feature.properties.Obesity}%`;
+            });
+          });
+        })
+        .catch((error) => console.error("Error loading GeoJSON:", error));
+    </script>
+  </body>
+</html>
