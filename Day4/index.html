@@ -12,45 +12,159 @@
     <script src="https://unpkg.com/deck.gl@8.5.7/dist.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <style>
-      /* Styles for the info panel and slider */
+      /* General styling */
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: start;
+        background-color: #f4f4f9;
+      }
+
+      /* Centered title */
+      h3 {
+        text-align: center;
+        margin-top: 10px;
+        font-size: 24px;
+        color: #333;
+      }
+
+      /* Subtitle with link */
+      .subtitle {
+        text-align: center;
+        font-size: 14px;
+        color: #555;
+        margin-top: 5px;
+      }
+
+      .subtitle a {
+        color: #0073e6;
+        text-decoration: none;
+      }
+
+      .subtitle a:hover {
+        text-decoration: underline;
+      }
+
+      /* File input and slider container */
+      .controls {
+        margin-top: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+
+      /* Map container */
+      #map {
+        width: 100%;
+        height: 100vh;
+        position: relative;
+        z-index: 0;
+      }
+
+      /* Info panel styling */
       #info-panel {
         display: none;
         position: absolute;
         top: 20px;
-        right: 20px;
+        left: 20px;
         padding: 10px;
         background: rgba(255, 255, 255, 0.9);
         border-radius: 5px;
         width: 250px;
         z-index: 1;
       }
+
       #close-btn {
         cursor: pointer;
-        color: red;
+        color: rgb(0, 0, 0);
         float: right;
       }
+
+      /* Slider container */
       #slider-container {
-        position: absolute;
-        top: 80px;
-        right: 20px;
-        background: rgba(255, 255, 255, 0.9);
+        /* background: rgba(255, 255, 255, 0.9);
         padding: 10px;
         border-radius: 5px;
-        z-index: 1;
+        z-index: 1; */
+      }
+      .slider {
+        -webkit-appearance: none;
+        width: 180px;
+        height: 12px;
+        border-radius: 5px;
+        background: #d3d3d3;
+        outline: none;
+        opacity: 0.7;
+        -webkit-transition: 0.2s;
+        transition: opacity 0.2s;
+        padding-left: 8px;
+      }
+
+      .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        /* border-radius: 50%; */
+        background: #000000;
+        cursor: pointer;
+      }
+
+      .slider::-moz-range-thumb {
+        width: 18px;
+        height: 18px;
+        /* border-radius: 50%; */
+        background: #000000;
+        cursor: pointer;
       }
     </style>
   </head>
   <body>
-    <input type="file" id="csvInput" accept=".csv" style="margin: 20px" />
-    <div id="map" style="width: 100%; height: 100vh"></div>
+    <!-- Title -->
+    <h3>Motor Vehicle Collisions in NYC</h3>
+
+    <!-- Subtitle with dataset link -->
+    <div class="subtitle">
+      Data Source:
+      <a
+        href="https://data.cityofnewyork.us/resource/h9gi-nx95.json"
+        target="_blank"
+      >
+        NYC Open Data - Motor Vehicle Collisions
+      </a>
+    </div>
+
+    <!-- File input and slider -->
+    <div class="controls">
+      <input type="file" id="csvInput" accept=".csv" />
+      <div id="slider-container">
+        <label for="mode-slider">Mode:</label>
+        <input
+          class="slider"
+          type="range"
+          id="mode-slider"
+          min="0"
+          max="2"
+          step="1"
+          value="0"
+        />
+      </div>
+    </div>
+
+    <!-- Map container -->
+    <div id="map"></div>
+
+    <!-- Info panel -->
     <div id="info-panel">
       <span id="close-btn">X</span>
       <div id="info-content"></div>
     </div>
-    <div id="slider-container">
-      <label for="mode-slider">Mode:</label>
-      <input type="range" id="mode-slider" min="0" max="2" step="1" value="0" />
-    </div>
+
     <script src="app2.js"></script>
   </body>
 </html>
